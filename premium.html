@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VoidEmail :: Premium Access</title>
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Fira Code (hacker font) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <!-- Icons (Phosphor Icons) -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+    <style>
+        /* Base body styling */
+        body {
+            font-family: 'Fira Code', monospace; /* Hacker-style font */
+            background-color: #000000;
+            color: #00ff41; /* Matrix green */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+        }
+
+        /* Canvas for the Matrix rain effect */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        /* Main container for centering and applying the semi-transparent background */
+        .main-container {
+            background-color: rgba(10, 25, 10, 0.85);
+            border: 1px solid #00ff41;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.5), inset 0 0 10px rgba(0, 255, 65, 0.3);
+            backdrop-filter: blur(3px);
+            border-radius: 1rem;
+            padding: 2rem;
+        }
+
+        /* Custom input styling */
+        .form-input {
+            background-color: rgba(0, 20, 0, 0.8);
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            width: 100%;
+            font-size: 1rem;
+            transition: all 0.2s ease-in-out;
+            caret-color: #00ff41;
+        }
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.7);
+        }
+        .form-input::placeholder {
+            color: rgba(0, 255, 65, 0.4);
+        }
+        .form-input:disabled {
+            background-color: rgba(10, 25, 10, 0.5);
+            border-color: #4a5a51;
+            cursor: not-allowed;
+        }
+
+        /* Primary button styling */
+        .primary-btn {
+            background-color: transparent;
+            border: 2px solid #00ff41;
+            color: #00ff41;
+            font-weight: 600;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem;
+            width: 100%;
+            text-align: center;
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            text-shadow: 0 0 5px rgba(0, 255, 65, 0.7);
+        }
+        .primary-btn:hover:not(:disabled) {
+            background-color: #00ff41;
+            color: #000000;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.8);
+            text-shadow: none;
+        }
+        .primary-btn:disabled {
+            border-color: #4a5a51;
+            color: #4a5a51;
+            cursor: not-allowed;
+            opacity: 0.7;
+            background-color: transparent;
+            text-shadow: none;
+        }
+        
+        /* Status message color classes */
+        .text-success { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
+        .text-warning { color: #ff3333; text-shadow: 0 0 5px #ff3333; }
+        .text-info { color: #33bbff; text-shadow: 0 0 5px #33bbff; }
+        
+        /* Phantom purple color for payment button */
+        .phantom-btn {
+            border-color: #A95AFF;
+            color: #A95AFF;
+            text-shadow: 0 0 5px #A95AFF;
+        }
+        .phantom-btn:hover:not(:disabled) {
+            background-color: #A95AFF;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(169, 90, 255, 0.8);
+            text-shadow: none;
+        }
+
+        /* Fade-in animation for elements */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+    
+    <canvas id="matrix-canvas"></canvas>
+
+    <div class="w-full max-w-lg mx-auto main-container">
+        
+        <header class="text-center mb-8 fade-in">
+            <h1 class="text-4xl font-bold tracking-widest uppercase">VoidSMTP Premium Access</h1>
+        </header>
+
+        <main class="space-y-6">
+            <div class="text-left space-y-2 fade-in" style="animation-delay: 200ms;">
+                <p>> Gain access to our pre-configured SMTP server for maximum performance.</p>
+                <p class="text-white/80">> No technical setup required. Free yourself from the constraints of personal SMTP servers.</p>
+                <ul class="list-none pl-4 space-y-1">
+                    <li><span class="text-success mr-2">✓</span> Unrestricted email spoofing</li>
+                    <li><span class="text-success mr-2">✓</span> Enhanced deliverability & inbox placement</li>
+                    <li><span class="text-success mr-2">✓</span> High-speed, reliable infrastructure</li>
+                    <li><span class="text-warning mr-2">✗</span> No rate limits or restrictions</li>
+                </ul>
+            </div>
+
+            <!-- Step 1: Email Verification -->
+            <div id="step-1" class="space-y-4 fade-in" style="animation-delay: 400ms;">
+                <div>
+                    <label for="user-email" class="text-sm font-medium mb-1 block">> YOUR_EMAIL</label>
+                    <input type="email" id="user-email" class="form-input" placeholder="[Enter your email for verification]">
+                </div>
+                <button id="send-code-btn" class="primary-btn w-full">Send Verification Code</button>
+            </div>
+            
+            <!-- Step 2: Code & Payment -->
+            <div id="step-2" class="hidden space-y-4">
+                 <div>
+                    <label for="verify-code" class="text-sm font-medium mb-1 block">> VERIFICATION_CODE</label>
+                    <input type="text" id="verify-code" class="form-input" placeholder="[Enter code from email]">
+                </div>
+                <button id="pay-btn" class="primary-btn phantom-btn w-full">
+                    <span id="pay-btn-text">Pay 0.05 SOL with Phantom Wallet</span>
+                    <div id="loading-spinner" class="hidden">
+                        <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="step-3" class="hidden text-center">
+                <p class="text-2xl text-success font-bold">> ACCESS GRANTED</p>
+                <p class="text-white/80">> Your premium SMTP access is now active.</p>
+                <a href="index.html" class="primary-btn mt-4 inline-block w-auto px-8">Access VoidEmail Panel</a>
+            </div>
+            
+            <div id="status-message" class="text-center text-sm mt-4 font-bold h-5"></div>
+        </main>
+    </div>
+
+    <script>
+        // --- MATRIX EFFECT SCRIPT ---
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let resizeTimer;
+        function handleResize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initializeMatrix();
+        }
+        window.addEventListener('resize', () => {
+            clearTimeout(resizeTimer);
+            resizeTimer = setTimeout(handleResize, 250);
+        });
+        let characters, fontSize, columns, drops;
+        function initializeMatrix() {
+            characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            characters = characters.split('');
+            fontSize = 14;
+            columns = Math.floor(canvas.width / fontSize);
+            drops = [];
+            for (let x = 0; x < columns; x++) drops[x] = Math.floor(Math.random() * canvas.height);
+        }
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = '#00ff41';
+            ctx.font = fontSize + 'px Fira Code';
+            for (let i = 0; i < drops.length; i++) {
+                const text = characters[Math.floor(Math.random() * characters.length)];
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
+                drops[i]++;
+            }
+        }
+        handleResize();
+        setInterval(drawMatrix, 35);
+
+        // --- APPLICATION LOGIC SCRIPT ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // DOM Elements
+            const step1 = document.getElementById('step-1');
+            const step2 = document.getElementById('step-2');
+            const step3 = document.getElementById('step-3');
+
+            const userEmailInput = document.getElementById('user-email');
+            const sendCodeBtn = document.getElementById('send-code-btn');
+            
+            const verifyCodeInput = document.getElementById('verify-code');
+            const payBtn = document.getElementById('pay-btn');
+
+            const statusMessageEl = document.getElementById('status-message');
+            const loadingSpinner = document.getElementById('loading-spinner');
+            const payBtnText = document.getElementById('pay-btn-text');
+
+            const setStatus = (message, type = 'info') => {
+                statusMessageEl.textContent = `> ${message}`;
+                statusMessageEl.className = `text-center text-sm mt-4 font-bold h-5 text-${type}`;
+            };
+
+            // --- Step 1: Send Verification Code ---
+            sendCodeBtn.addEventListener('click', async () => {
+                const email = userEmailInput.value;
+                if (!email || !email.includes('@')) {
+                    setStatus('WARNING: Please enter a valid email.', 'warning');
+                    return;
+                }
+                
+                sendCodeBtn.disabled = true;
+                setStatus('Sending verification signal...', 'info');
+
+                // Simulate API call
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                
+                setStatus('Verification code sent. Check your inbox.', 'success');
+                sendCodeBtn.disabled = false;
+                
+                // Transition to Step 2
+                step1.classList.add('hidden');
+                step2.classList.remove('hidden');
+                step2.classList.add('fade-in');
+                userEmailInput.disabled = true; // Lock the email input
+            });
+
+            // --- Step 2: Verify Code and Pay ---
+            payBtn.addEventListener('click', async () => {
+                const code = verifyCodeInput.value;
+                if (!code || code.length < 4) {
+                    setStatus('WARNING: Invalid verification code.', 'warning');
+                    return;
+                }
+
+                setLoading(true);
+                setStatus('Connecting to Phantom Wallet...', 'info');
+
+                // Simulate wallet connection and payment
+                try {
+                    // 1. Simulate wallet connection
+                    await new Promise(resolve => setTimeout(resolve, 1500));
+                    console.log('Phantom Wallet connected.');
+                    setStatus('Wallet connected. Awaiting payment...', 'info');
+
+                    // 2. Simulate transaction
+                    const destinationAddress = '9WAF8oLDj2TayqFZtoWKCcAQSLP6k4jdan3CKsS7RCQ9';
+                    const amount = 0.05;
+                    console.log(`Simulating payment of ${amount} SOL to ${destinationAddress}`);
+                    await new Promise(resolve => setTimeout(resolve, 2500));
+
+                    // 3. Handle success
+                    console.log('Payment successful!');
+                    setStatus('Payment received. Access granted.', 'success');
+                    
+                    // Transition to Step 3
+                    step2.classList.add('hidden');
+                    step3.classList.remove('hidden');
+                    step3.classList.add('fade-in');
+
+                } catch (error) {
+                    console.error('Payment Error:', error);
+                    setStatus('ERROR: Payment failed or was cancelled.', 'warning');
+                } finally {
+                    setLoading(false);
+                }
+            });
+
+            const setLoading = (isLoading) => {
+                payBtn.disabled = isLoading;
+                payBtnText.classList.toggle('hidden', isLoading);
+                loadingSpinner.classList.toggle('hidden', !isLoading);
+            };
+        });
+    </script>
+</body>
+</html>
