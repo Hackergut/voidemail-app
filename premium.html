@@ -5,29 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VoidEmail :: Premium Access</title>
     
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Google Fonts: Fira Code (hacker font) -->
+    <!-- Preload critical resources -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" as="style">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
-
-    <!-- Icons (Phosphor Icons) -->
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-
+    
+    <!-- Critical CSS inlined for faster First Contentful Paint -->
     <style>
-        /* Base body styling */
+        /* Critical above-the-fold styles */
         body {
-            font-family: 'Fira Code', monospace; /* Hacker-style font */
+            font-family: 'Fira Code', 'Courier New', monospace;
             background-color: #000000;
-            color: #00ff41; /* Matrix green */
+            color: #00ff41;
             -webkit-font-smoothing: antialiased;
             -moz-osx-font-smoothing: grayscale;
             text-shadow: 0 0 5px rgba(0, 255, 65, 0.5);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
         }
 
-        /* Canvas for the Matrix rain effect */
         #matrix-canvas {
             position: fixed;
             top: 0;
@@ -37,7 +38,6 @@
             z-index: -1;
         }
 
-        /* Main container for centering and applying the semi-transparent background */
         .main-container {
             background-color: rgba(10, 25, 10, 0.85);
             border: 1px solid #00ff41;
@@ -45,9 +45,11 @@
             backdrop-filter: blur(3px);
             border-radius: 1rem;
             padding: 2rem;
+            width: 100%;
+            max-width: 32rem;
         }
 
-        /* Custom input styling */
+        /* Form styles */
         .form-input {
             background-color: rgba(0, 20, 0, 0.8);
             border: 1px solid #00ff41;
@@ -55,8 +57,9 @@
             border-radius: 0.5rem;
             padding: 0.75rem 1rem;
             width: 100%;
+            box-sizing: border-box;
             font-size: 1rem;
-            transition: all 0.2s ease-in-out;
+            transition: box-shadow 0.2s ease-in-out;
             caret-color: #00ff41;
         }
         .form-input:focus {
@@ -72,7 +75,6 @@
             cursor: not-allowed;
         }
 
-        /* Primary button styling */
         .primary-btn {
             background-color: transparent;
             border: 2px solid #00ff41;
@@ -89,6 +91,7 @@
             justify-content: center;
             gap: 0.5rem;
             text-shadow: 0 0 5px rgba(0, 255, 65, 0.7);
+            box-sizing: border-box;
         }
         .primary-btn:hover:not(:disabled) {
             background-color: #00ff41;
@@ -104,40 +107,73 @@
             background-color: transparent;
             text-shadow: none;
         }
-        
-        /* Status message color classes */
+
+        /* Utility classes */
+        .text-center { text-align: center; }
+        .text-left { text-align: left; }
+        .hidden { display: none; }
         .text-success { color: #00ff41; text-shadow: 0 0 5px #00ff41; }
         .text-warning { color: #ff3333; text-shadow: 0 0 5px #ff3333; }
         .text-info { color: #33bbff; text-shadow: 0 0 5px #33bbff; }
+        .phantom-btn { border-color: #A95AFF; color: #A95AFF; text-shadow: 0 0 5px #A95AFF; }
+        .phantom-btn:hover:not(:disabled) { background-color: #A95AFF; color: #fff; box-shadow: 0 0 15px rgba(169, 90, 255, 0.8); text-shadow: none; }
+        .fade-in { animation: fadeIn 0.5s ease-out forwards; }
         
-        /* Phantom purple color for payment button */
-        .phantom-btn {
-            border-color: #A95AFF;
-            color: #A95AFF;
-            text-shadow: 0 0 5px #A95AFF;
-        }
-        .phantom-btn:hover:not(:disabled) {
-            background-color: #A95AFF;
-            color: #fff;
-            box-shadow: 0 0 15px rgba(169, 90, 255, 0.8);
-            text-shadow: none;
-        }
-
-        /* Fade-in animation for elements */
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        .fade-in {
-            animation: fadeIn 0.5s ease-out forwards;
+        
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
+        
+        .animate-spin { animation: spin 1s linear infinite; }
+        
+        /* Layout utilities */
+        .space-y-6 > * + * { margin-top: 1.5rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mt-4 { margin-top: 1rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .pl-4 { padding-left: 1rem; }
+        
+        /* Typography */
+        .text-4xl { font-size: 2.25rem; line-height: 2.5rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .font-bold { font-weight: 700; }
+        .font-medium { font-weight: 500; }
+        .tracking-widest { letter-spacing: 0.1em; }
+        .uppercase { text-transform: uppercase; }
+        .list-none { list-style: none; }
+        .block { display: block; }
+        .inline-block { display: inline-block; }
+        .px-8 { padding-left: 2rem; padding-right: 2rem; }
+        
+        /* Colors */
+        .text-white\/80 { color: rgba(255, 255, 255, 0.8); }
+        .h-5 { height: 1.25rem; }
+        .w-5 { width: 1.25rem; }
+        .w-auto { width: auto; }
+        .w-full { width: 100%; }
+        .opacity-25 { opacity: 0.25; }
+        .opacity-75 { opacity: 0.75; }
     </style>
+    
+    <!-- Load non-critical resources asynchronously -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&display=swap"></noscript>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
+<body>
     
     <canvas id="matrix-canvas"></canvas>
 
-    <div class="w-full max-w-lg mx-auto main-container">
+    <div class="main-container">
         
         <header class="text-center mb-8 fade-in">
             <h1 class="text-4xl font-bold tracking-widest uppercase">VoidSMTP Premium Access</h1>
@@ -161,7 +197,7 @@
                     <label for="user-email" class="text-sm font-medium mb-1 block">> YOUR_EMAIL</label>
                     <input type="email" id="user-email" class="form-input" placeholder="[Enter your email for verification]">
                 </div>
-                <button id="send-code-btn" class="primary-btn w-full">Send Verification Code</button>
+                <button id="send-code-btn" class="primary-btn">Send Verification Code</button>
             </div>
             
             <!-- Step 2: Code & Payment -->
@@ -170,7 +206,7 @@
                     <label for="verify-code" class="text-sm font-medium mb-1 block">> VERIFICATION_CODE</label>
                     <input type="text" id="verify-code" class="form-input" placeholder="[Enter code from email]">
                 </div>
-                <button id="pay-btn" class="primary-btn phantom-btn w-full">
+                <button id="pay-btn" class="primary-btn phantom-btn">
                     <span id="pay-btn-text">Pay 0.05 SOL with Phantom Wallet</span>
                     <div id="loading-spinner" class="hidden">
                         <svg class="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -193,135 +229,229 @@
     </div>
 
     <script>
-        // --- MATRIX EFFECT SCRIPT ---
-        const canvas = document.getElementById('matrix-canvas');
-        const ctx = canvas.getContext('2d');
-        let resizeTimer;
-        function handleResize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            initializeMatrix();
-        }
-        window.addEventListener('resize', () => {
-            clearTimeout(resizeTimer);
-            resizeTimer = setTimeout(handleResize, 250);
-        });
-        let characters, fontSize, columns, drops;
-        function initializeMatrix() {
-            characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-            characters = characters.split('');
-            fontSize = 14;
-            columns = Math.floor(canvas.width / fontSize);
-            drops = [];
-            for (let x = 0; x < columns; x++) drops[x] = Math.floor(Math.random() * canvas.height);
-        }
-        function drawMatrix() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#00ff41';
-            ctx.font = fontSize + 'px Fira Code';
-            for (let i = 0; i < drops.length; i++) {
-                const text = characters[Math.floor(Math.random() * characters.length)];
-                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-                if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
-                drops[i]++;
+        // Optimized Matrix Effect with Performance Improvements
+        class MatrixEffect {
+            constructor(canvas) {
+                this.canvas = canvas;
+                this.ctx = canvas.getContext('2d');
+                this.characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.split('');
+                this.fontSize = 14;
+                this.columns = 0;
+                this.drops = [];
+                this.isVisible = true;
+                this.lastTime = 0;
+                this.fps = 30; // Reduced from ~28.5fps (35ms) to 30fps for better performance
+                this.frameInterval = 1000 / this.fps;
+                
+                // Performance optimizations
+                this.resizeTimeout = null;
+                this.animationId = null;
+                
+                this.init();
+                this.bindEvents();
+                this.start();
+            }
+            
+            init() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+                this.columns = Math.floor(this.canvas.width / this.fontSize);
+                this.drops = Array.from({ length: this.columns }, () => 
+                    Math.floor(Math.random() * (this.canvas.height / this.fontSize))
+                );
+            }
+            
+            bindEvents() {
+                // Throttled resize handler
+                window.addEventListener('resize', () => {
+                    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+                    this.resizeTimeout = setTimeout(() => this.init(), 150);
+                });
+                
+                // Pause animation when page is hidden (Page Visibility API)
+                document.addEventListener('visibilitychange', () => {
+                    this.isVisible = !document.hidden;
+                    if (this.isVisible) this.start();
+                });
+            }
+            
+            draw(currentTime) {
+                if (currentTime - this.lastTime < this.frameInterval) return;
+                this.lastTime = currentTime;
+                
+                // Clear with slight opacity for trail effect
+                this.ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+                this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+                
+                // Draw characters
+                this.ctx.fillStyle = '#00ff41';
+                this.ctx.font = `${this.fontSize}px Fira Code, monospace`;
+                
+                for (let i = 0; i < this.drops.length; i++) {
+                    const char = this.characters[Math.floor(Math.random() * this.characters.length)];
+                    const x = i * this.fontSize;
+                    const y = this.drops[i] * this.fontSize;
+                    
+                    this.ctx.fillText(char, x, y);
+                    
+                    // Reset drop when it goes off screen
+                    if (y > this.canvas.height && Math.random() > 0.975) {
+                        this.drops[i] = 0;
+                    }
+                    this.drops[i]++;
+                }
+            }
+            
+            animate = (currentTime) => {
+                if (!this.isVisible) return;
+                
+                this.draw(currentTime);
+                this.animationId = requestAnimationFrame(this.animate);
+            }
+            
+            start() {
+                if (this.animationId) cancelAnimationFrame(this.animationId);
+                this.animationId = requestAnimationFrame(this.animate);
+            }
+            
+            stop() {
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
             }
         }
-        handleResize();
-        setInterval(drawMatrix, 35);
 
-        // --- APPLICATION LOGIC SCRIPT ---
-        document.addEventListener('DOMContentLoaded', () => {
-            // DOM Elements
-            const step1 = document.getElementById('step-1');
-            const step2 = document.getElementById('step-2');
-            const step3 = document.getElementById('step-3');
-
-            const userEmailInput = document.getElementById('user-email');
-            const sendCodeBtn = document.getElementById('send-code-btn');
+        // Application Logic with Performance Optimizations
+        class PremiumApp {
+            constructor() {
+                this.elements = {
+                    step1: document.getElementById('step-1'),
+                    step2: document.getElementById('step-2'),
+                    step3: document.getElementById('step-3'),
+                    userEmail: document.getElementById('user-email'),
+                    sendCodeBtn: document.getElementById('send-code-btn'),
+                    verifyCode: document.getElementById('verify-code'),
+                    payBtn: document.getElementById('pay-btn'),
+                    statusMessage: document.getElementById('status-message'),
+                    loadingSpinner: document.getElementById('loading-spinner'),
+                    payBtnText: document.getElementById('pay-btn-text')
+                };
+                
+                this.bindEvents();
+            }
             
-            const verifyCodeInput = document.getElementById('verify-code');
-            const payBtn = document.getElementById('pay-btn');
-
-            const statusMessageEl = document.getElementById('status-message');
-            const loadingSpinner = document.getElementById('loading-spinner');
-            const payBtnText = document.getElementById('pay-btn-text');
-
-            const setStatus = (message, type = 'info') => {
-                statusMessageEl.textContent = `> ${message}`;
-                statusMessageEl.className = `text-center text-sm mt-4 font-bold h-5 text-${type}`;
-            };
-
-            // --- Step 1: Send Verification Code ---
-            sendCodeBtn.addEventListener('click', async () => {
-                const email = userEmailInput.value;
-                if (!email || !email.includes('@')) {
-                    setStatus('WARNING: Please enter a valid email.', 'warning');
+            bindEvents() {
+                this.elements.sendCodeBtn.addEventListener('click', this.handleSendCode.bind(this));
+                this.elements.payBtn.addEventListener('click', this.handlePayment.bind(this));
+                
+                // Add enter key support for better UX
+                this.elements.userEmail.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.handleSendCode();
+                });
+                
+                this.elements.verifyCode.addEventListener('keypress', (e) => {
+                    if (e.key === 'Enter') this.handlePayment();
+                });
+            }
+            
+            setStatus(message, type = 'info') {
+                this.elements.statusMessage.textContent = `> ${message}`;
+                this.elements.statusMessage.className = `text-center text-sm mt-4 font-bold h-5 text-${type}`;
+            }
+            
+            setLoading(isLoading) {
+                this.elements.payBtn.disabled = isLoading;
+                this.elements.payBtnText.classList.toggle('hidden', isLoading);
+                this.elements.loadingSpinner.classList.toggle('hidden', !isLoading);
+            }
+            
+            // Optimized transitions with proper cleanup
+            transitionToStep(fromStep, toStep) {
+                fromStep.classList.add('hidden');
+                toStep.classList.remove('hidden');
+                toStep.classList.add('fade-in');
+                
+                // Clean up animation class after animation completes
+                setTimeout(() => toStep.classList.remove('fade-in'), 500);
+            }
+            
+            async handleSendCode() {
+                const email = this.elements.userEmail.value.trim();
+                
+                if (!email || !this.isValidEmail(email)) {
+                    this.setStatus('WARNING: Please enter a valid email.', 'warning');
                     return;
                 }
                 
-                sendCodeBtn.disabled = true;
-                setStatus('Sending verification signal...', 'info');
-
-                // Simulate API call
-                await new Promise(resolve => setTimeout(resolve, 1500));
+                this.elements.sendCodeBtn.disabled = true;
+                this.setStatus('Sending verification signal...', 'info');
                 
-                setStatus('Verification code sent. Check your inbox.', 'success');
-                sendCodeBtn.disabled = false;
-                
-                // Transition to Step 2
-                step1.classList.add('hidden');
-                step2.classList.remove('hidden');
-                step2.classList.add('fade-in');
-                userEmailInput.disabled = true; // Lock the email input
-            });
-
-            // --- Step 2: Verify Code and Pay ---
-            payBtn.addEventListener('click', async () => {
-                const code = verifyCodeInput.value;
-                if (!code || code.length < 4) {
-                    setStatus('WARNING: Invalid verification code.', 'warning');
-                    return;
-                }
-
-                setLoading(true);
-                setStatus('Connecting to Phantom Wallet...', 'info');
-
-                // Simulate wallet connection and payment
                 try {
-                    // 1. Simulate wallet connection
-                    await new Promise(resolve => setTimeout(resolve, 1500));
-                    console.log('Phantom Wallet connected.');
-                    setStatus('Wallet connected. Awaiting payment...', 'info');
-
-                    // 2. Simulate transaction
-                    const destinationAddress = '9WAF8oLDj2TayqFZtoWKCcAQSLP6k4jdan3CKsS7RCQ9';
-                    const amount = 0.05;
-                    console.log(`Simulating payment of ${amount} SOL to ${destinationAddress}`);
-                    await new Promise(resolve => setTimeout(resolve, 2500));
-
-                    // 3. Handle success
-                    console.log('Payment successful!');
-                    setStatus('Payment received. Access granted.', 'success');
+                    // Simulate API call with proper error handling
+                    await this.delay(1500);
                     
-                    // Transition to Step 3
-                    step2.classList.add('hidden');
-                    step3.classList.remove('hidden');
-                    step3.classList.add('fade-in');
-
+                    this.setStatus('Verification code sent. Check your inbox.', 'success');
+                    this.transitionToStep(this.elements.step1, this.elements.step2);
+                    this.elements.userEmail.disabled = true;
+                    
+                } catch (error) {
+                    this.setStatus('ERROR: Failed to send verification code.', 'warning');
+                } finally {
+                    this.elements.sendCodeBtn.disabled = false;
+                }
+            }
+            
+            async handlePayment() {
+                const code = this.elements.verifyCode.value.trim();
+                
+                if (!code || code.length < 4) {
+                    this.setStatus('WARNING: Invalid verification code.', 'warning');
+                    return;
+                }
+                
+                this.setLoading(true);
+                this.setStatus('Connecting to Phantom Wallet...', 'info');
+                
+                try {
+                    // Simulate wallet connection
+                    await this.delay(1500);
+                    this.setStatus('Wallet connected. Awaiting payment...', 'info');
+                    
+                    // Simulate transaction
+                    await this.delay(2500);
+                    
+                    this.setStatus('Payment received. Access granted.', 'success');
+                    this.transitionToStep(this.elements.step2, this.elements.step3);
+                    
                 } catch (error) {
                     console.error('Payment Error:', error);
-                    setStatus('ERROR: Payment failed or was cancelled.', 'warning');
+                    this.setStatus('ERROR: Payment failed or was cancelled.', 'warning');
                 } finally {
-                    setLoading(false);
+                    this.setLoading(false);
                 }
-            });
+            }
+            
+            // Utility methods
+            isValidEmail(email) {
+                return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+            }
+            
+            delay(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+        }
 
-            const setLoading = (isLoading) => {
-                payBtn.disabled = isLoading;
-                payBtnText.classList.toggle('hidden', isLoading);
-                loadingSpinner.classList.toggle('hidden', !isLoading);
-            };
+        // Initialize app when DOM is ready
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize matrix effect
+            const canvas = document.getElementById('matrix-canvas');
+            if (canvas) {
+                new MatrixEffect(canvas);
+            }
+            
+            // Initialize app
+            new PremiumApp();
         });
     </script>
 </body>
